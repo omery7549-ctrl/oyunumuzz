@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bizim Hikâyemiz 💗</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 18px;
+      background: linear-gradient(160deg, #fff5fa, #fce7f3);
+      font-family: system-ui, sans-serif;
+      color: #493744;
+    }
+    .wrap { max-width: 620px; margin: auto; }
+    .panel {
+      background: white;
+      border: 1px solid #f4d5e5;
+      border-radius: 22px;
+      padding: 22px;
+      margin: 12px 0;
+      box-shadow: 0 8px 30px #b85b8515;
+    }
+    .center { text-align: center; }
+    .pink { color: #e879a9; }
+    .muted { color: #927d8c; font-size: .9rem; }
+    .btn, .choice {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn {
+      background: #e879a9;
+      color: white;
+      font-weight: 700;
+      margin-top: 15px;
+    }
+    .choice {
+      display: block;
+      text-align: left;
+      background: #fff8fc;
+      border: 1px solid #f0d4e2;
+      color: #493744;
+      margin: 9px 0;
+    }
+    .choice:disabled { opacity: .75; }
+    .choice.selected {
+      border: 2px solid #e879a9;
+      background: #fff0f7;
+    }
+    .track {
+      height: 8px;
+      background: #f7e1ec;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 18px;
+    }
+    .bar {
+      height: 100%;
+      background: #e879a9;
+      width: 0;
+    }
+    .answer {
+      padding: 13px;
+      border: 1px solid #f0d4e2;
+      border-radius: 13px;
+      margin: 10px 0;
+      text-align: left;
+      font-size: .92rem;
+    }
+    .final-note {
+      background: #fff5fa;
+      border: 1px dashed #e879a9;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 18px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel center">
+      <div style="font-size: 2rem">💗 🌷 💗</div>
+      <h1 class="pink">Bizim Hikâyemiz</h1>
+      <p class="muted">Bakalım benim senin için düşündüğüm şeyleri ve bizim anılarımızı ne kadar hatırlıyorsun?</p>
+      <div class="track"><div class="bar" id="bar"></div></div>
+      <p class="muted" id="counter">10 özel soru seni bekliyor</p>
+    </section>
+
+    <section class="panel" id="game">
+      <div class="center">
+        <div style="font-size: 3rem">🎀</div>
+        <h2>Melek, hazır mısın?</h2>
+        <p class="muted">Soruları cevapla. En sonunda cevaplarını ve puanını görebileceksin. 💌</p>
+        <button class="btn" id="start">Oyuna başla ✨</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        q: "Biz yaklaşık kaç yıldır birbirimizi tanıyoruz?",
+        opts: ["1 yıldır", "2 yıldır", "4 yıldır", "Yeni tanıştık"],
+        a: 2,
+        why: "Dört yıl… Bir sürü şey değişti ama yollarımız bir şekilde yine birbirine çıktı."
+      },
+      {
+        q: "Bir süre konuşmadıktan sonra yeniden bir araya geldiğimizde ne oldu?",
+        opts: ["Hikâyemiz yeniden başladı", "Birbirimizi tamamen unuttuk", "Hiç tanışmamış gibi olduk", "Bir daha hiç konuşmadık"],
+        a: 0,
+        why: "Bazen araya zaman girse de bazı insanlar yeniden hayatına girmenin bir yolunu buluyor."
+      },
+      {
+        q: "Senin için hazırladığım en uzun soluklu sürprizlerden biri hangisiydi?",
+        opts: ["360 numaralı zarf", "Bir kahve kupası", "Bir kitap ayracı", "Bir fotoğraf çerçevesi"],
+        a: 0,
+        why: "360 tane zarf… Her birinin içinde ayrı bir düşünce, ayrı bir emek vardı."
+      },
+      {
+        q: "Benim sende en sevdiğim şeyler neler?",
+        opts: ["Gülüşün", "Kahverengi gözlerin", "Sesin", "Hepsi 💗"],
+        a: 3,
+        why: "Hepsi tabii ki… Gülüşün, kahverengi gözlerin, sesin ve o kendine has tatlı hâlin."
+      },
+      {
+        q: "Senin için düşündüğüm Hello Kitty sürprizi neydi?",
+        opts: ["Hello Kitty buketi 🎀", "Bir futbol topu", "Bir çiçek saksısı", "Bir oyuncak araba"],
+        a: 0,
+        why: "Hello Kitty buketi… Sırf yüzünde bir gülümseme olsun diye düşündüğüm tatlı sürprizlerden biriydi."
+      },
+      {
+        q: "Seni ilk öptüğüm yer neresiydi?",
+        opts: ["Parkta", "Sahilde 🌊", "Okulda", "Bir kafede"],
+        a: 1,
+        why: "Sahilde… Bazı anların nerede yaşandığını unutmaz insan."
+      },
+      {
+        q: "Senin için hediye ettiğim ışıklı sürpriz neydi?",
+        opts: ["RGB ışık 🌈", "Masa saati", "Gece lambası", "Telefon tutucu"],
+        a: 0,
+        why: "RGB ışık… Renkleriyle odana ayrı bir hava katsın istemiştim."
+      },
+      {
+        q: "Senin için hazırladığım dijital sürprizlerden hangileri vardı?",
+        opts: ["NFC kart", "Hello Kitty macerası", "Dedektif oyunu", "Hepsi 💗"],
+        a: 3,
+        why: "NFC kart, Hello Kitty macerası ve dedektif oyunu… Senin için dijital dünyada bile küçük sürprizler hazırladım."
+      },
+      {
+        q: "Senin için düşündüğüm hediyeler arasında hangileri vardı?",
+        opts: ["Çanta, kolye ve saat", "Kulaklık, ayakkabı ve forma", "Kitap, kalem ve defter", "Gözlük, şapka ve kemer"],
+        a: 0,
+        why: "Çanta, kolye ve saat… Sana yakışacağını hayal ettiğim hediyelerden bazıları."
+      },
+      {
+        q: "Peki bütün bunları senin için neden düşündüm?",
+        opts: ["Yüzünde bir gülümseme görmek için", "Sadece oyun olsun diye", "Bir yarış kazanmak için", "Başkaları istediği için"],
+        a: 0,
+        why: "Çünkü seni mutlu etmek istedim. Hepsinin arkasında seni düşünmem vardı."
+      }
+    ];
+
+    let index = 0, score = 0, answers = [];
+    const game = document.getElementById('game');
+    const bar = document.getElementById('bar');
+    const counter = document.getElementById('counter');
+
+    document.getElementById('start').onclick = render;
+
+    function render() {
+      const item = questions[index];
+      bar.style.width = (index / questions.length * 100) + '%';
+      counter.textContent = (index + 1) + ' / ' + questions.length + ' soru';
+
+      game.innerHTML = '<div class="pink" style="font-weight:700;font-size:.8rem">BİZİM HİKÂYEMİZ · SORU ' + (index + 1) + '</div><h2>' + item.q + '</h2><div id="opts"></div><div id="feedback"></div>';
+
+      const opts = game.querySelector('#opts');
+      item.opts.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.textContent = opt;
+        b.onclick = () => {
+          if (opts.dataset.done) return;
+          opts.dataset.done = '1';
+
+          let correct = i === item.a;
+          if (correct) score++;
+          answers.push({ q: item.q, selected: opt, correct, expected: item.opts[item.a] });
+
+          [...opts.children].forEach((el, j) => {
+            el.disabled = true;
+            if (j === i) el.classList.add('selected');
+          });
+
+          game.querySelector('#feedback').innerHTML = '<div class="answer"><b class="pink">' + (correct ? 'Aynen öyle! 💗' : 'Cevabın kaydedildi 💕') + '</b><p>' + item.why + '</p><button class="btn" id="next">' + (index === questions.length - 1 ? 'Cevaplarımı göster 💌' : 'Sonraki soru →') + '</button></div>';
+
+          game.querySelector('#next').onclick = () => {
+            index++;
+            index < questions.length ? render() : finish();
+          };
+        };
+        opts.appendChild(b);
+      });
+    }
+
+    function finish() {
+      bar.style.width = '100%';
+      counter.textContent = 'Cevapların tamamlandı 💗';
+
+      game.innerHTML = `
+        <div class="center">
+          <div style="font-size:3rem">💌</div>
+          <h2 class="pink">Melek’in cevapları</h2>
+          <p class="muted">Skorun</p>
+          <div class="pink" style="font-size:2rem;font-weight:800">${score} / ${questions.length}</div>
+          <p class="muted">Bütün cevapların aşağıda:</p>
+        </div>
+
+        <div class="final-note">
+          <b class="pink" style="font-size: 1.1rem;">Sana küçük bir not 💗</b>
+          <p style="margin: 10px 0 0 0; line-height: 1.5; color: #493744;">
+            Bu soruların hepsinin arkasında senin için düşündüğüm anılar ve küçük sürprizler var. Cevapların ne olursa olsun bu oyunu oynadığın için çok mutluyum. İyi ki varsın. 🤍
+          </p>
+        </div>
+
+        <div id="answers"></div>
+        <button class="btn" id="again">Yeniden oyna 🎀</button>
+      `;
+
+      const list = game.querySelector('#answers');
+      answers.forEach((a, i) => {
+        const d = document.createElement('div');
+        d.className = 'answer';
+        const q = document.createElement('b');
+        q.textContent = (i + 1) + '. ' + a.q;
+        const s = document.createElement('p');
+        s.textContent = 'Melek’in cevabı: ' + a.selected;
+        const status = document.createElement('p');
+        status.className = 'pink';
+        status.style.fontWeight = '700';
+        status.textContent = a.correct ? '✓ Doğru cevap' : 'Doğru cevap: ' + a.expected;
+        d.append(q, s, status);
+        list.appendChild(d);
+      });
+
+      game.querySelector('#again').onclick = () => {
+        index = 0;
+        score = 0;
+        answers = [];
+        game.innerHTML = '<div class="center"><div style="font-size:3rem">🎀</div><h2>Melek, hazır mısın?</h2><p class="muted">Soruları cevapla. En sonunda cevaplarını ve puanını görebileceksin. 💌</p><button class="btn" id="start">Oyuna başla ✨</button></div>';
+        document.getElementById('start').onclick = render;
+        bar.style.width = '0%';
+        counter.textContent = '10 özel soru seni bekliyor';
+      };
+    }
+  </script>
+</body>
+</html>
